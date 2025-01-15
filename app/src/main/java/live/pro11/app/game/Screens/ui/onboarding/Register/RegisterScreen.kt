@@ -1,10 +1,7 @@
-package live.pro11.app.game.Screens.ui.Onboarding
+package live.pro11.app.game.Screens.ui.onboarding.Register
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,7 +21,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import live.pro11.app.game.sharedComponant.button.MainButton
 import live.pro11.app.game.sharedComponant.button.ProCheckBoxWithLabel
-import live.pro11.app.game.sharedComponant.customViews.TermsAndConditionsText
 import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
 import live.pro11.app.game.sharedComponant.textField.ProTextField
 

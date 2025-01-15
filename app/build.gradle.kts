@@ -1,12 +1,19 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("kotlin-kapt")  // Required for annotation processing
+    id("dagger.hilt.android.plugin") // Hilt plugin
+
 }
+
 
 android {
     namespace = "live.pro11.app.game"
     compileSdk = 35
+
 
     defaultConfig {
         applicationId = "live.pro11.app.game"
@@ -28,11 +35,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
@@ -56,16 +63,34 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation ("androidx.compose.material:material:1.5.0")  // Use the latest version
-    implementation ("androidx.navigation:navigation-compose:2.5.3")  // If you are using navigation
-    implementation ("androidx.compose.ui:ui:1.5.0")  // For basic UI components
-    implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation(libs.androidx.material)
+    implementation(libs.ui)
+    implementation(libs.androidx.runtime.livedata)
 
-
-    // dependency added
     // Navigation
+    implementation(libs.navigation.compose)
+    implementation(libs.androidx.animation)
 
-    implementation("androidx.navigation:navigation-compose:2.8.5")
-    implementation ("androidx.compose.animation:animation:1.7.6") // For animations
+    // Retrofit and Gson
+    implementation(libs.retrofit)
+    implementation(libs.gson)
 
+    // Coroutines
+    implementation(libs.coroutinesCore)
+    implementation(libs.coroutinesAndroid)
+
+    // Logging
+    implementation(libs.logging.interceptor)
+
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+
+    implementation (libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.msz.progress.indicator)
+
+}
+kapt {
+    correctErrorTypes = true
 }

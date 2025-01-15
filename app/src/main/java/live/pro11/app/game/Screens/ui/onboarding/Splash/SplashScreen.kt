@@ -1,4 +1,4 @@
-package live.pro11.app.game.Screens.ui.Onboarding
+package live.pro11.app.game.Screens.ui.onboarding.Splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -25,8 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import live.pro11.app.game.R
 import live.pro11.app.game.navigation.Screen

@@ -1,4 +1,4 @@
-package live.pro11.app.game.Screens.ui.Onboarding.login
+package live.pro11.app.game.Screens.ui.onboarding.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +18,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import live.pro11.app.game.navigation.Screen
@@ -32,13 +29,10 @@ import live.pro11.app.game.sharedComponant.customViews.OrDividerView
 import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
 import live.pro11.app.game.sharedComponant.textField.ProTextField
 import live.pro11.app.game.sharedComponant.customViews.TermsAndConditionsText
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun LoginScreen(navController: NavController) {
-
-    var email by remember { mutableStateOf("") }
-    var isChecked by remember { mutableStateOf(false) }
-    var isButtonEnabled by remember { mutableStateOf(true) }
+fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
 
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -66,51 +60,56 @@ fun LoginScreen(navController: NavController) {
                     )
 
 
-                    ProTextField(value = email,
-                        onValueChange = { newText -> email = newText },
+                    ProTextField(value = viewModel.email,
+                        onValueChange = { newText -> viewModel.onEmailChange(newText) }, // Use ViewModel method
                         keyboardType = KeyboardType.Email,
                         placeholder = "Enter your email",
                         modifier = Modifier.padding(bottom = 16.dp)
-
                     )
-                    ProCheckBoxWithLabel(checked = isChecked,
+                    ProCheckBoxWithLabel(
+                        checked = viewModel.isChecked,
                         label = "I certify that I am 18 and above",
-                        onCheckedChange = { newValue -> isChecked = newValue}
+                        onCheckedChange = { newValue -> viewModel.onCheckboxChange(newValue) } // Use ViewModel method
                     )
 
                     MainButton(
                         label = "Submit",
-                        enabled = isButtonEnabled,
+                        enabled = viewModel.isButtonEnabled,
                         onClick = {
-                            navController.navigate(Screen.OtpScreen.route)
+                            println("On Click login")
+                            viewModel.loginUser(
+                                onLoginSuccess = {
+                                    // Navigate to OTP screen when login is successful
+                                    navController.navigate(Screen.OtpScreen.route)
+                                },
+                                onLoginError = { message ->
+                                    // Set error message when login fails
+                                   print(message)
+                                }
+                            )
                         }
                     )
 
                     Column(
                         modifier = Modifier
                             .padding(10.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally, // Center content horizontally
-                        verticalArrangement = Arrangement.Center // C
-
-
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
                         TermsAndConditionsText()
                         Spacer(modifier = Modifier.height(16.dp)) // Adds space between the two items
-
                         OrDividerView()
                     }
 
                     BorderedButton(
                         titleColor = Color.Red,
                         onClick = {
-                            navController.navigate(Screen.Register.route)  // Correct usage
-
+                            navController.navigate(Screen.Register.route)
                         },
                         title = "Create a new Account",
                         borderColor = Color.Gray,
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp))
-
-
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                    )
                 }
             }
         }
