@@ -1,5 +1,6 @@
 package live.pro11.app.game.Screens.ui.onboarding.otp
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import live.pro11.app.game.R
+import live.pro11.app.game.common.universal.alert.TimedAlertDialog
 import live.pro11.app.game.sharedComponant.button.MainButton
 import live.pro11.app.game.sharedComponant.loader.Pro11Loader
 import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
@@ -40,6 +44,8 @@ import live.pro11.app.game.sharedComponant.textField.ProTextField
 fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewModel(), email: String, token: String) {
 
     val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
 
     LaunchedEffect(email, token) {
         viewModel.email = email
@@ -102,7 +108,7 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
 
                         ProTextField(
                             value = viewModel.otpValue,
-                            onValueChange = { newValue -> viewModel.otpValue = newValue },
+                            onValueChange = { newValue -> viewModel.onOtpValueChange(newValue)},
                             keyboardType = KeyboardType.Text,
                             cornerRadius = 5,
                             placeholder = "Enter OTP"
@@ -115,10 +121,18 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
             }
             MainButton(
                 onClick = {
-                    viewModel.verifyOTP()
+                    viewModel.verifyOTP(
+                        onOTPSuccess = {
+                        },
+                        onOTPError = { message ->
+                            // Set error message when login fails
+                            errorMessage.value = message
+                            print(message)
+                        }
+                    )
 //                    navController.navigate(Screen.HomeTabBar.route)
                 },
-                enabled = true,
+                enabled = viewModel.isEnable,
                 label = "Submit",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
@@ -127,6 +141,13 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
         if (isLoading) {
             Pro11Loader()
         }
+    }
+
+    // Show the alert dialog only if there's an error message
+    errorMessage.value?.let { message ->
+        TimedAlertDialog(
+            message = message,
+        onDismiss = { errorMessage.value = null })
     }
 }
 

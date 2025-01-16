@@ -1,7 +1,9 @@
 package live.pro11.app.game.Screens.ui.onboarding.auth.service
 
+import live.pro11.app.game.Screens.ui.onboarding.register.dto.User
 import live.pro11.app.game.Screens.ui.onboarding.auth.request.LoginRequest
 import live.pro11.app.game.Screens.ui.onboarding.auth.request.OTPRequest
+import live.pro11.app.game.Screens.ui.onboarding.auth.request.RegisterationRequest
 import live.pro11.app.game.Screens.ui.onboarding.login.model.LoginResponse
 import live.pro11.app.game.Screens.ui.onboarding.otp.dto.OTPResponse
 import live.pro11.app.game.base.BaseDTO
@@ -20,4 +22,13 @@ interface  OTPService {
     suspend fun verifyOTP(
         @Body requestBody: OTPRequest
     ):BaseDTO<OTPResponse>
+}
+
+interface RegisterService {
+
+    @POST("/api/sign-up")
+    suspend fun registerWithoutReferal(
+        @Body requestBody: RegisterationRequest
+    ): BaseDTO<User>
+
 }

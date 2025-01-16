@@ -10,7 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import live.pro11.app.game.Screens.ui.onboarding.login.LoginScreen
 import live.pro11.app.game.Screens.ui.onboarding.otp.OTPScreen
-import live.pro11.app.game.Screens.ui.onboarding.Register.RegisterScreen
+import live.pro11.app.game.Screens.ui.onboarding.register.RegisterScreen
 import live.pro11.app.game.Screens.ui.fantasyHome.HomeTabBar
 
 

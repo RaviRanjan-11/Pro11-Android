@@ -13,7 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,12 +34,16 @@ import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
 import live.pro11.app.game.sharedComponant.textField.ProTextField
 import live.pro11.app.game.sharedComponant.customViews.TermsAndConditionsText
 import androidx.hilt.navigation.compose.hiltViewModel
+import live.pro11.app.game.common.universal.alert.TimedAlertDialog
 import live.pro11.app.game.sharedComponant.loader.Pro11Loader
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
 
     val isLoading by viewModel.isLoading.collectAsState()
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
+
 
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -91,7 +96,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                                 },
                                 onLoginError = { message ->
                                     // Set error message when login fails
-                                   print(message)
+                                    errorMessage.value = message
+                                    print(message)
                                 }
                             )
                         }
@@ -121,8 +127,16 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                 if (isLoading) {
                     Pro11Loader()
                 }
+
             }
         }
+    }
+    // Show the alert dialog only if there's an error message
+    errorMessage.value?.let { message ->
+        TimedAlertDialog(
+            message = message,
+            onDismiss = { errorMessage.value = null }
+        )
     }
 }
 
