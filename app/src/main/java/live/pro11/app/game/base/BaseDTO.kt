@@ -1,7 +1,9 @@
 package live.pro11.app.game.base
 
+import com.google.gson.annotations.SerializedName
+
 data class BaseDTO<T>(
-    val responseDTO: T,
+    @SerializedName("data") val responseDTO: T,
     val error: List<String>,
     val message: String,
     val statusCode: Int,

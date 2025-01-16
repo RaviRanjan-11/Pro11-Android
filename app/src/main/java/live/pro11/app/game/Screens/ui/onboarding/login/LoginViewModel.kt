@@ -1,5 +1,6 @@
 package live.pro11.app.game.Screens.ui.onboarding.login
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,6 +29,9 @@ class LoginViewModel @Inject constructor(
     var isButtonEnabled by mutableStateOf(false)
         private set
 
+    var loginToken by mutableStateOf("")
+        private  set
+
     fun onEmailChange(newEmail: String) {
         email = newEmail
         validateForm()
@@ -46,28 +50,28 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(onLoginSuccess: () -> Unit, onLoginError: (String) -> Unit) {
         viewModelScope.launch {
+            showLoader()  // Show loader before API call
             try {
                 val response = loginService.login(LoginRequest(email))
 
                 if (response.success) {
                     println("Login Successful: $response")
-                    SharedPrefsManager.saveString(SharedPreferenceKeys.USER_TOKEN, response.responseDTO.token)
+                    loginToken = response.responseDTO.token
+                    Log.d("Token", "Login Token: $loginToken")
+                    println("Login Successful: $loginToken, ${response.responseDTO}")
                     onLoginSuccess()
                 } else {
-                    if (response.statusCode == 500) {
-                        onLoginError("Internal Server Error: ${response.message}")
-                    } else {
-                        // Handle other errors based on response
-                        onLoginError("Error: ${response.error.joinToString()}")
+                    val errorMessage = when (response.statusCode) {
+                        500 -> "Internal Server Error: ${response.message}"
+                        else -> "Error: ${response.error.joinToString()}"
                     }
+                    onLoginError(errorMessage)
                 }
-
-
             } catch (e: Exception) {
-                println("Login Error: ${e.message}")
-                onLoginSuccess()
-//                onLoginError("Failed")
-
+                Log.e("Login Error", "Exception occurred: ${e.message}", e)
+                onLoginError("An unexpected error occurred: ${e.message}")
+            } finally {
+                hideLoader()  // Hide loader after API call completes
             }
         }
     }

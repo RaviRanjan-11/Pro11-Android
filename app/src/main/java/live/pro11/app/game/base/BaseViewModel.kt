@@ -1,9 +1,8 @@
 package live.pro11.app.game.base
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 // Enum to represent API call states
 sealed class ApiState<out T> {
@@ -12,24 +11,31 @@ sealed class ApiState<out T> {
     data class Error(val message: String) : ApiState<Nothing>()
 }
 
+
 open class BaseViewModel : ViewModel() {
 
-    // LiveData for handling the loading state
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> get() = _isLoading
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // LiveData for API state (Loading, Success, Error)
-    private val _apiState = MutableLiveData<ApiState<Any>>()
-    val apiState: LiveData<ApiState<Any>> get() = _apiState
+    private val _apiState = MutableStateFlow<ApiState<Any>>(ApiState.Loading)
+    val apiState: StateFlow<ApiState<Any>> = _apiState.asStateFlow()
 
-    // Method to show the loader
     fun showLoader() {
         _isLoading.value = true
+        _apiState.value = ApiState.Loading
     }
 
-    // Method to hide the loader
     fun hideLoader() {
         _isLoading.value = false
     }
 
+    fun <T : Any> setSuccessState(data: T) {
+        _apiState.value = ApiState.Success(data)
+        hideLoader()  // ✅ Hiding the loader on success
+    }
+
+    fun setErrorState(message: String) {
+        _apiState.value = ApiState.Error(message)
+        hideLoader()  // ✅ Hiding the loader on error
+    }
 }

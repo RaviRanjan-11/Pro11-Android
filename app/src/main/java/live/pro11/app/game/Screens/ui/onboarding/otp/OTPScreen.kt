@@ -15,10 +15,9 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,13 +31,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import live.pro11.app.game.R
-import live.pro11.app.game.navigation.Screen
 import live.pro11.app.game.sharedComponant.button.MainButton
+import live.pro11.app.game.sharedComponant.loader.Pro11Loader
 import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
 import live.pro11.app.game.sharedComponant.textField.ProTextField
 
 @Composable
-fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewModel()) {
+fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewModel(), email: String, token: String) {
+
+    val isLoading by viewModel.isLoading.collectAsState()
+
+    LaunchedEffect(email, token) {
+        viewModel.email = email
+        viewModel.token = token
+    }
 
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)
@@ -71,7 +77,7 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
                             verticalAlignment = Alignment.CenterVertically // Align items vertically at the center
                         ) {
                             Text(
-                                "myubuntuu@hgmail.com",
+                                viewModel.email,
                                 color = Color.Gray,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold
@@ -109,12 +115,17 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
             }
             MainButton(
                 onClick = {
-                    navController.navigate(Screen.HomeTabBar.route)
+                    viewModel.verifyOTP()
+//                    navController.navigate(Screen.HomeTabBar.route)
                 },
                 enabled = true,
                 label = "Submit",
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             )
+
+        }
+        if (isLoading) {
+            Pro11Loader()
         }
     }
 }
@@ -125,6 +136,6 @@ fun OTPScreen(navController: NavController, viewModel: OTPViewModel = hiltViewMo
 
 fun ShowOTPScreen() {
     val mockNavController = rememberNavController()
-    OTPScreen(navController = mockNavController)
+    OTPScreen(navController = mockNavController, email = "", token = "")
 
 }

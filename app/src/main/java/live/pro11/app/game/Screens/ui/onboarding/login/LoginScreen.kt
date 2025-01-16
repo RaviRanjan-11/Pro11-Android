@@ -1,5 +1,6 @@
 package live.pro11.app.game.Screens.ui.onboarding.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,7 +22,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import live.pro11.app.game.navigation.Screen
@@ -30,9 +33,12 @@ import live.pro11.app.game.sharedComponant.navigationBar.NavigationBar
 import live.pro11.app.game.sharedComponant.textField.ProTextField
 import live.pro11.app.game.sharedComponant.customViews.TermsAndConditionsText
 import androidx.hilt.navigation.compose.hiltViewModel
+import live.pro11.app.game.sharedComponant.loader.Pro11Loader
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltViewModel()) {
+
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
@@ -80,7 +86,8 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                             viewModel.loginUser(
                                 onLoginSuccess = {
                                     // Navigate to OTP screen when login is successful
-                                    navController.navigate(Screen.OtpScreen.route)
+                                    Log.d("Here are the detail for otp ${viewModel.email} ${viewModel.loginToken}", "Login successful")
+                                    navController.navigate(Screen.OtpScreen.route+ "/${viewModel.email}/${viewModel.loginToken}")
                                 },
                                 onLoginError = { message ->
                                     // Set error message when login fails
@@ -110,6 +117,9 @@ fun LoginScreen(navController: NavController, viewModel: LoginViewModel = hiltVi
                         borderColor = Color.Gray,
                         modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                     )
+                }
+                if (isLoading) {
+                    Pro11Loader()
                 }
             }
         }
